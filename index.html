@@ -1,0 +1,3663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1400, maximum-scale=1.0, user-scalable=yes">
+    <title>🎬 CINEVERSE · Netflix Style</title>
+    <!-- Plyr.io CSS -->
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #000;
+            color: white;
+            overflow-x: auto;
+            overflow-y: auto;
+            min-width: 1400px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .main-wrapper {
+            flex: 1 0 auto;
+            width: 100%;
+        }
+
+        .theater-header {
+            background: linear-gradient(90deg, #1a1a1a, #000);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            border-bottom: 2px solid #ff0000;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            filter: brightness(1.2);
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 0, 0, 0.2);
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #ff0000;
+        }
+
+        .live-indicator:hover {
+            background: rgba(255, 0, 0, 0.4);
+            transform: scale(1.05);
+        }
+
+        .live-dot {
+            width: 12px;
+            height: 12px;
+            background: #ff0000;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000;
+            animation: livePulse 1.5s infinite;
+        }
+
+        .live-text {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .live-viewer-count {
+            color: #4ecdc4;
+            font-size: 1rem;
+            font-weight: bold;
+            margin-left: 0.5rem;
+            padding-left: 0.5rem;
+            border-left: 2px solid #ff0000;
+        }
+
+        @keyframes livePulse {
+            0% {
+                box-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000;
+                opacity: 1;
+            }
+            50% {
+                box-shadow: 0 0 15px #ff0000, 0 0 30px #ff0000, 0 0 40px #ff0000;
+                opacity: 0.8;
+            }
+            100% {
+                box-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000;
+                opacity: 1;
+            }
+        }
+
+        .header-channels {
+            display: flex;
+            gap: 2rem;
+            margin-left: auto;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .channel-text {
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0.3rem 0;
+            position: relative;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        .channel-text.hollywood {
+            color: #f5c542;
+        }
+        .channel-text.hollywood.active {
+            border-bottom: 3px solid #f5c542;
+        }
+
+        .channel-text.kdrama {
+            color: #ff80bf;
+        }
+        .channel-text.kdrama.active {
+            border-bottom: 3px solid #ff80bf;
+        }
+
+        .channel-text.bollywood {
+            color: #4ecdc4;
+        }
+        .channel-text.bollywood.active {
+            border-bottom: 3px solid #4ecdc4;
+        }
+
+        .channel-text.series {
+            color: #ff6b6b;
+        }
+        .channel-text.series.active {
+            border-bottom: 3px solid #ff6b6b;
+        }
+
+        .channel-text.tollywood {
+            color: #ffa500;
+        }
+        .channel-text.tollywood.active {
+            border-bottom: 3px solid #ffa500;
+        }
+
+        .channel-text.anime {
+            color: #9b59b6;
+        }
+        .channel-text.anime.active {
+            border-bottom: 3px solid #9b59b6;
+        }
+
+        .channel-text.classic {
+            color: #95a5a6;
+        }
+        .channel-text.classic.active {
+            border-bottom: 3px solid #95a5a6;
+        }
+
+        .channel-text.horror {
+            color: #2c3e50;
+        }
+        .channel-text.horror.active {
+            border-bottom: 3px solid #2c3e50;
+        }
+
+        .admin-icon, .search-icon {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #ff6b6b;
+            transition: all 0.3s ease;
+            margin-left: 1rem;
+        }
+
+        .admin-icon:hover, .search-icon:hover {
+            color: #ff0000;
+            transform: scale(1.1);
+        }
+
+        .search-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            padding: 2rem;
+        }
+
+        .search-modal.show {
+            display: block;
+        }
+
+        .search-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem;
+            color: #ff0000;
+            cursor: pointer;
+        }
+
+        .search-input {
+            width: 100%;
+            max-width: 800px;
+            margin: 3rem auto;
+            display: block;
+            padding: 1rem;
+            font-size: 1.5rem;
+            background: #1a1a1a;
+            border: 2px solid #ff0000;
+            color: white;
+            border-radius: 50px;
+            outline: none;
+        }
+
+        .search-results {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1rem;
+        }
+
+        .result-card {
+            background: #1a1a1a;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid #ff0000;
+            transition: all 0.3s ease;
+            aspect-ratio: 2/3;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 15px rgba(255,0,0,0.5);
+        }
+
+        .result-card .movie-poster {
+            width: 100%;
+            height: 80%;
+            overflow: hidden;
+        }
+
+        .result-card .movie-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .result-card .movie-info {
+            height: 20%;
+            padding: 0.5rem;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-btn {
+            background: transparent;
+            color: #ff6b6b;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.3rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-btn:hover {
+            color: #ff0000;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: #1a1a1a;
+            min-width: 220px;
+            border: 1px solid #ff0000;
+            border-radius: 8px;
+            z-index: 1000;
+            box-shadow: none;
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            color: #fff;
+            padding: 10px 16px;
+            text-decoration: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #333;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: #ff0000;
+        }
+
+        .screen-bar {
+            text-align: center;
+            padding: 0.8rem;
+            background: linear-gradient(90deg, transparent, #ff0000, #4ecdc4, #ff0000, transparent);
+            color: white;
+            font-weight: bold;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #ff0000;
+            border-top: 2px solid #ff0000;
+            box-shadow: 0 4px 10px rgba(255,0,0,0.3);
+            width: 100%;
+            margin: 0;
+        }
+
+        .slider-container {
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slider-wrapper {
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .slider {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 540px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slide-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            color: white;
+        }
+
+        .slide-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin-bottom: 0.5rem;
+        }
+
+        .slide-subtitle {
+            font-size: 1.3rem;
+            color: #ccc;
+        }
+
+        .slider-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            z-index: 20;
+        }
+
+        .dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #ff0000;
+        }
+
+        .dot.active {
+            background: #ff0000;
+            transform: scale(1.2);
+            box-shadow: 0 0 10px #ff0000;
+        }
+
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,0,0,0.7);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 30;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .slider-btn:hover {
+            background: #ff0000;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .slider-btn.prev {
+            left: 20px;
+        }
+
+        .slider-btn.next {
+            right: 20px;
+        }
+
+        .series-page {
+            display: none;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .series-page.show {
+            display: block;
+        }
+
+        .series-header {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+            padding: 2rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .series-header.hide {
+            display: none;
+        }
+
+        .series-poster {
+            width: 300px;
+            height: 450px;
+            background: linear-gradient(45deg, #333, #222);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            color: #ff6b6b;
+            border-radius: 10px;
+            border: 2px solid #ff0000;
+            overflow: hidden;
+        }
+
+        .series-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .series-poster .poster-emoji {
+            font-size: 5rem;
+        }
+
+        .series-info {
+            flex: 1;
+        }
+
+        .series-title {
+            font-size: 2.5rem;
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+        }
+
+        .series-description {
+            font-size: 1.1rem;
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .series-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .series-meta-item {
+            background: rgba(255,0,0,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            border: 1px solid #ff0000;
+            font-size: 0.9rem;
+        }
+
+        .series-video-player {
+            width: 100%;
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .series-video-player.show {
+            display: block;
+        }
+
+        .series-video-wrapper {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .series-video-wrapper video {
+            width: 100%;
+            height: 100%;
+        }
+
+        .episodes-title {
+            font-size: 1.8rem;
+            color: #ff6b6b;
+            margin: 2rem 0 1.5rem;
+            padding-left: 1rem;
+            border-left: 5px solid #ff0000;
+        }
+
+        .episodes-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .episode-card {
+            background: #1a1a1a;
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid #333;
+        }
+
+        .episode-card:hover {
+            transform: translateY(-3px);
+            border-color: #ff6b6b;
+            box-shadow: 0 4px 10px rgba(255,107,107,0.3);
+        }
+
+        .episode-card.active {
+            border: 2px solid #ff6b6b;
+            box-shadow: 0 0 15px rgba(255,107,107,0.5);
+        }
+
+        .episode-thumb {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #2a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #ff6b6b;
+            position: relative;
+        }
+
+        .episode-number {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: #ff6b6b;
+            color: white;
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .episode-info {
+            padding: 0.5rem;
+        }
+
+        .episode-title {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 0.2rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .episode-duration {
+            font-size: 0.65rem;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .episode-duration::before {
+            content: "⏱️";
+            font-size: 0.65rem;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #ff0000;
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .back-btn:hover {
+            background: transparent;
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+
+        .video-player-section {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .video-player-section.active {
+            display: block;
+        }
+
+        .live-full-header {
+            background: linear-gradient(90deg, #1a1a1a, #000);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            border-bottom: 2px solid #ff0000;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+        }
+
+        .live-full-logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .live-full-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 0, 0, 0.2);
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            border: 2px solid #ff0000;
+            cursor: pointer;
+        }
+
+        .live-full-indicator:hover {
+            background: rgba(255, 0, 0, 0.4);
+        }
+
+        .live-full-dot {
+            width: 12px;
+            height: 12px;
+            background: #ff0000;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000;
+            animation: livePulse 1.5s infinite;
+        }
+
+        .live-full-text {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .live-full-viewer {
+            color: #4ecdc4;
+            font-size: 1rem;
+            font-weight: bold;
+            margin-left: 0.5rem;
+            padding-left: 0.5rem;
+            border-left: 2px solid #ff0000;
+        }
+
+        .live-full-screen {
+            background: linear-gradient(90deg, transparent, #ff0000, #4ecdc4, #ff0000, transparent);
+            color: white;
+            font-weight: bold;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #ff0000;
+            border-top: 2px solid #ff0000;
+            box-shadow: 0 4px 10px rgba(255,0,0,0.3);
+            text-align: center;
+            padding: 0.8rem;
+            width: 100%;
+        }
+
+        .close-video {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ff0000;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 1001;
+        }
+
+        .close-video:hover {
+            background: #ff3333;
+        }
+
+        .live-full-content {
+            width: 100%;
+            padding: 0;
+            min-height: calc(100vh - 200px);
+        }
+
+        .video-wrapper {
+            width: 100%;
+            position: relative;
+            aspect-ratio: 16/9;
+            background: #000;
+        }
+
+        .video-wrapper video {
+            width: 100%;
+            height: 100%;
+        }
+
+        .plyr {
+            --plyr-color-main: #ff0000;
+            --plyr-video-background: #000;
+            height: 100%;
+            width: 100%;
+        }
+
+        .movie-details {
+            width: 100%;
+            padding: 2rem;
+            background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+        }
+
+        .movie-details-title {
+            font-size: 2rem;
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(255,0,0,0.3);
+        }
+
+        .movie-details-description {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #ccc;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            width: 100%;
+            border-left: 3px solid #ff0000;
+        }
+
+        .movie-details-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            padding: 0 1rem;
+        }
+
+        .movie-details-meta-item {
+            background: rgba(255,0,0,0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            border: 1px solid #ff0000;
+            font-size: 0.95rem;
+        }
+
+        .movie-details-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #ff0000;
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 0 15px rgba(255,0,0,0.5);
+            margin-left: 1rem;
+        }
+
+        .movie-details-link:hover {
+            background: transparent;
+            border-color: #ff0000;
+            color: #ff0000;
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(255,0,0,0.8);
+        }
+
+        .video-latest-section {
+            width: 100%;
+            padding: 2rem;
+            background: #000;
+            border-top: 2px solid #ff0000;
+            border-bottom: 2px solid #ff0000;
+            position: relative;
+        }
+
+        .video-latest-title {
+            font-size: 1.8rem;
+            color: #ff6b6b;
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 5px solid #ff0000;
+        }
+
+        .latest-slider-container {
+            position: relative;
+            overflow: hidden;
+            padding: 0 40px;
+        }
+
+        .latest-slider-wrapper {
+            overflow: hidden;
+        }
+
+        .latest-slider {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            gap: 1rem;
+        }
+
+        .latest-slide {
+            min-width: calc((100% - 11rem) / 12);
+            flex-shrink: 0;
+        }
+
+        .video-latest-card {
+            background: #1a1a1a;
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #ff0000;
+            width: 100%;
+            aspect-ratio: 2/3;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-latest-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 15px rgba(255,0,0,0.5);
+        }
+
+        .video-latest-poster {
+            width: 100%;
+            height: 80%;
+            background: linear-gradient(45deg, #333, #222);
+            overflow: hidden;
+        }
+
+        .video-latest-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-latest-info {
+            height: 20%;
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .video-latest-title-text {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .video-latest-badge {
+            font-size: 0.6rem;
+            color: #ff0000;
+            text-transform: uppercase;
+            margin-top: 0.2rem;
+        }
+
+        .latest-slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,0,0,0.7);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .latest-slider-btn:hover {
+            background: #ff0000;
+        }
+
+        .latest-slider-btn.prev {
+            left: 0;
+        }
+
+        .latest-slider-btn.next {
+            right: 0;
+        }
+
+        .movie-section {
+            padding: 2rem;
+        }
+
+        .movie-row {
+            margin-bottom: 2.5rem;
+        }
+
+        .row-title {
+            font-size: 1.6rem;
+            color: #ff6b6b;
+            margin-bottom: 1.2rem;
+            padding-left: 1rem;
+            border-left: 5px solid #ff0000;
+        }
+
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1rem;
+        }
+
+        .movie-card {
+            background: #1a1a1a;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            aspect-ratio: 2/3;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-8px);
+            border-color: #ff0000;
+            box-shadow: 0 0 15px rgba(255,0,0,0.5);
+        }
+
+        .movie-poster {
+            width: 100%;
+            height: 80%;
+            background: linear-gradient(45deg, #333, #222);
+            overflow: hidden;
+        }
+
+        .movie-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .movie-info {
+            height: 20%;
+            padding: 0.6rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .movie-card-title {
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 0.2rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .movie-meta {
+            display: flex;
+            gap: 0.3rem;
+            font-size: 0.65rem;
+            color: #aaa;
+            flex-wrap: wrap;
+        }
+
+        .movie-badge {
+            background: #ff0000;
+            color: white;
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.6rem;
+        }
+
+        .series-badge {
+            background: #ff6b6b;
+            color: white;
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.6rem;
+        }
+
+        .admin-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 3000;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .admin-panel.show {
+            display: block;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #ff0000;
+            padding-bottom: 1rem;
+        }
+
+        .admin-title {
+            font-size: 2rem;
+            color: #ff6b6b;
+        }
+
+        .admin-close {
+            font-size: 2rem;
+            color: #ff0000;
+            cursor: pointer;
+        }
+
+        .admin-login {
+            max-width: 400px;
+            margin: 100px auto;
+            background: #1a1a1a;
+            padding: 2rem;
+            border-radius: 10px;
+            border: 2px solid #ff0000;
+        }
+
+        .admin-login h2 {
+            color: #ff6b6b;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .admin-input {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            background: #333;
+            border: 1px solid #ff0000;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .admin-btn {
+            width: 100%;
+            padding: 0.8rem;
+            background: #ff0000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .admin-btn:hover {
+            background: #ff3333;
+        }
+
+        .admin-btn-small {
+            padding: 0.4rem 1rem;
+            background: #ff0000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .admin-btn-small:hover {
+            background: #ff3333;
+        }
+
+        .admin-content {
+            display: none;
+        }
+
+        .admin-content.show {
+            display: block;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .admin-tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            color: #ccc;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .admin-tab:hover {
+            background: #333;
+        }
+
+        .admin-tab.active {
+            background: #ff0000;
+            color: white;
+        }
+
+        .admin-form {
+            background: #1a1a1a;
+            padding: 2rem;
+            border-radius: 10px;
+            border: 1px solid #ff0000;
+            margin-bottom: 2rem;
+        }
+
+        .admin-form h3 {
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: #ccc;
+            margin-bottom: 0.3rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            background: #333;
+            border: 1px solid #ff0000;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .file-upload-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .file-upload-group .form-control {
+            flex: 1;
+        }
+
+        .file-upload-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .file-upload-btn:hover {
+            background: #ff3333;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .preview-image {
+            max-width: 100px;
+            max-height: 100px;
+            margin-top: 0.5rem;
+            border-radius: 5px;
+            border: 1px solid #ff0000;
+        }
+
+        select.form-control {
+            background: #333;
+        }
+
+        .episode-item {
+            background: #222;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+            border-left: 3px solid #ff0000;
+            position: relative;
+        }
+
+        .add-episode-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .remove-episode {
+            background: #ff0000;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 3px;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .success-message {
+            background: #4ecdc4;
+            color: black;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        #selectedSeriesInfo {
+            background: #222;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            border-left: 3px solid #ff6b6b;
+        }
+
+        .banner-thumb {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-top: 0.5rem;
+            border: 1px solid #ff0000;
+        }
+
+        .delete-panel {
+            background: #1a1a1a;
+            padding: 2rem;
+            border-radius: 10px;
+            border: 1px solid #ff0000;
+            margin-bottom: 2rem;
+        }
+
+        .delete-panel h3 {
+            color: #ff6b6b;
+            margin-bottom: 1.5rem;
+        }
+
+        .delete-search {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .delete-search select, .delete-search input {
+            padding: 0.8rem;
+            background: #333;
+            border: 1px solid #ff0000;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .delete-search select {
+            width: 200px;
+        }
+
+        .delete-search input {
+            flex: 1;
+        }
+
+        .items-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            border-radius: 5px;
+        }
+
+        .delete-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #333;
+            transition: all 0.3s ease;
+        }
+
+        .delete-item:hover {
+            background: #222;
+        }
+
+        .delete-item img {
+            width: 50px;
+            height: 75px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .delete-item-info {
+            flex: 1;
+        }
+
+        .delete-item-title {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .delete-item-meta {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+        .delete-btn {
+            background: #ff0000;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .delete-btn:hover {
+            background: #ff3333;
+        }
+
+        .footer {
+            background: #000;
+            padding: 2rem;
+            text-align: center;
+            color: #666;
+            border-top: 2px solid #ff0000;
+            width: 100%;
+            flex-shrink: 0;
+            margin-top: auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: #ff6b6b;
+            text-decoration: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #ff0000;
+            transform: scale(1.1);
+        }
+
+        .footer-copyright {
+            color: #444;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1400px) {
+            body {
+                min-width: 1400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <div class="theater-header" id="mainHeader">
+            <div class="logo" id="siteName">
+                🎬 CINEVERSE · LIVE
+            </div>
+            
+            <div class="live-indicator" id="liveBtn">
+                <span class="live-dot"></span>
+                <span class="live-text">LIVE</span>
+                <span class="live-viewer-count" id="liveViewerCountHeader">44.48k</span>
+            </div>
+            
+            <div class="header-channels">
+                <span class="channel-text hollywood" id="textHollywood">HOLLYWOOD</span>
+                <span class="channel-text kdrama" id="textKdrama">K-DRAMA</span>
+                <span class="channel-text bollywood" id="textBollywood">BOLLYWOOD</span>
+                <span class="channel-text series" id="textSeries">SERIES</span>
+                <span class="channel-text tollywood" id="textTollywood">TOLLYWOOD</span>
+                <span class="channel-text anime" id="textAnime">ANIME</span>
+                <span class="channel-text classic" id="textClassic">CLASSIC</span>
+                <span class="channel-text horror" id="textHorror">HORROR</span>
+                
+                <div class="dropdown" id="dropdown">
+                    <button class="dropdown-btn" id="dropdownBtn">
+                        MORE ▼
+                    </button>
+                    <div class="dropdown-content" id="dropdownContent">
+                        <div class="dropdown-item" data-channel="tollywood">TOLLYWOOD</div>
+                        <div class="dropdown-item" data-channel="anime">ANIME</div>
+                        <div class="dropdown-item" data-channel="classic">CLASSIC</div>
+                        <div class="dropdown-item" data-channel="horror">HORROR</div>
+                    </div>
+                </div>
+                
+                <span class="search-icon" id="searchIcon">🔍</span>
+                <span class="admin-icon" id="adminIcon">⚙️</span>
+            </div>
+        </div>
+
+        <!-- Admin Panel -->
+        <div class="admin-panel" id="adminPanel">
+            <div class="admin-header">
+                <div class="admin-title">⚙️ ADMIN PANEL</div>
+                <div class="admin-close" id="closeAdmin">✕</div>
+            </div>
+
+            <!-- Login Form -->
+            <div class="admin-login" id="adminLogin">
+                <h2>🔐 ADMIN LOGIN</h2>
+                <input type="password" class="admin-input" id="adminPassword" placeholder="Enter Password">
+                <button class="admin-btn" id="loginBtn">LOGIN</button>
+            </div>
+
+            <!-- Admin Content -->
+            <div class="admin-content" id="adminContent">
+                <div class="admin-tabs">
+                    <div class="admin-tab active" data-tab="movies">🎬 ADD MOVIE</div>
+                    <div class="admin-tab" data-tab="series">📺 ADD SERIES</div>
+                    <div class="admin-tab" data-tab="edit-series">✏️ ADD EPISODE</div>
+                    <div class="admin-tab" data-tab="banners">🖼️ BANNERS</div>
+                    <div class="admin-tab" data-tab="delete">🗑️ DELETE</div>
+                </div>
+
+                <!-- Success Message -->
+                <div class="success-message" id="successMessage">✅ Success!</div>
+
+                <!-- Movies Form -->
+                <div class="admin-form" id="moviesForm">
+                    <h3>➕ ADD NEW MOVIE</h3>
+                    
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" class="form-control" id="movieTitle" placeholder="e.g., THE BONE TEMPLE">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Release Date</label>
+                        <input type="text" class="form-control" id="movieReleaseDate" placeholder="e.g., 15 March 2026">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Audio Languages</label>
+                        <input type="text" class="form-control" id="movieAudio" placeholder="e.g., English, Hindi, Tamil">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>IMDb Rating</label>
+                        <input type="text" class="form-control" id="movieImdb" placeholder="e.g., 8.5/10">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Duration</label>
+                        <input type="text" class="form-control" id="movieDuration" placeholder="e.g., 2h 28min">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Detailed Description</label>
+                        <textarea class="form-control" id="movieDescription" rows="5" placeholder="Full movie description with cast, crew, story..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Thumbnail / Poster</label>
+                        <div class="file-upload-group">
+                            <input type="text" class="form-control" id="movieThumbnail" placeholder="https://example.com/image.jpg">
+                            <button class="file-upload-btn" id="uploadThumbnailBtn">📁 UPLOAD</button>
+                        </div>
+                        <input type="file" class="file-input" id="thumbnailFile" accept="image/*">
+                        <div id="thumbnailPreview"></div>
+                        <small style="color: #aaa;">URL daalo ya upload karo</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Quality</label>
+                        <select class="form-control" id="movieQuality">
+                            <option value="4K">4K</option>
+                            <option value="1080p">1080p</option>
+                            <option value="720p">720p</option>
+                            <option value="480p">480p</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Channel</label>
+                        <select class="form-control" id="movieChannel">
+                            <option value="hollywood">HOLLYWOOD</option>
+                            <option value="kdrama">K-DRAMA</option>
+                            <option value="bollywood">BOLLYWOOD</option>
+                            <option value="tollywood">TOLLYWOOD</option>
+                            <option value="anime">ANIME</option>
+                            <option value="classic">CLASSIC</option>
+                            <option value="horror">HORROR</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Video</label>
+                        <div class="file-upload-group">
+                            <input type="text" class="form-control" id="movieVideoUrl" placeholder="https://example.com/video.mp4 OR Google Drive ID">
+                            <button class="file-upload-btn" id="uploadVideoBtn">📁 UPLOAD</button>
+                        </div>
+                        <input type="file" class="file-input" id="videoFile" accept="video/*">
+                        <small style="color: #aaa;">MP4 file upload karo ya URL daalo</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Download Link (Optional)</label>
+                        <input type="text" class="form-control" id="movieDownloadLink" placeholder="https://example.com/download">
+                    </div>
+                    
+                    <button class="admin-btn" id="addMovieBtn">ADD MOVIE</button>
+                </div>
+
+                <!-- New Series Form -->
+                <div class="admin-form" id="seriesForm" style="display: none;">
+                    <h3>➕ ADD NEW SERIES</h3>
+                    
+                    <div class="form-group">
+                        <label>Series Title</label>
+                        <input type="text" class="form-control" id="seriesTitle" placeholder="e.g., STRANGER THINGS">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Release Year</label>
+                        <input type="text" class="form-control" id="seriesYear" placeholder="e.g., 2025">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Season</label>
+                        <input type="text" class="form-control" id="seriesSeason" placeholder="e.g., Season 1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Genre</label>
+                        <input type="text" class="form-control" id="seriesGenre" placeholder="e.g., Sci-Fi · Horror">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Audio Languages</label>
+                        <input type="text" class="form-control" id="seriesAudio" placeholder="e.g., English, Hindi">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>IMDb Rating</label>
+                        <input type="text" class="form-control" id="seriesImdb" placeholder="e.g., 8.7/10">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea class="form-control" id="seriesDescription" rows="5" placeholder="Series description with cast and story..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Series Poster</label>
+                        <div class="file-upload-group">
+                            <input type="text" class="form-control" id="seriesThumbnail" placeholder="https://example.com/poster.jpg">
+                            <button class="file-upload-btn" id="uploadSeriesThumbnailBtn">📁 UPLOAD</button>
+                        </div>
+                        <input type="file" class="file-input" id="seriesThumbnailFile" accept="image/*">
+                        <div id="seriesThumbnailPreview"></div>
+                    </div>
+
+                    <h4 style="color: #ff6b6b; margin-top: 2rem;">📺 EPISODES</h4>
+                    <div id="episodesContainer"></div>
+                    <button class="add-episode-btn" id="addEpisodeBtn">+ ADD EPISODE</button>
+                    <button class="admin-btn" id="addSeriesBtn" style="margin-top: 2rem;">ADD SERIES</button>
+                </div>
+
+                <!-- Add Episode to Existing Series Form -->
+                <div class="admin-form" id="editSeriesForm" style="display: none;">
+                    <h3>✏️ ADD EPISODE TO EXISTING SERIES</h3>
+                    
+                    <div class="form-group">
+                        <label>Select Series</label>
+                        <select class="form-control" id="selectSeries">
+                            <option value="">-- Select a series --</option>
+                        </select>
+                    </div>
+
+                    <div id="selectedSeriesInfo" style="display: none;">
+                        <h4 style="color: #ff6b6b; margin-bottom: 0.5rem;" id="selectedSeriesTitle"></h4>
+                        <p id="selectedSeriesDetails"></p>
+                        <p><strong>Current Episodes:</strong> <span id="currentEpisodeCount">0</span></p>
+                    </div>
+
+                    <h4 style="color: #ff6b6b; margin-top: 2rem;">📺 NEW EPISODE</h4>
+                    
+                    <div class="form-group">
+                        <label>Episode Number (Auto-filled)</label>
+                        <input type="text" class="form-control" id="episodeNumber" readonly placeholder="Will be auto-filled">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Episode Title</label>
+                        <input type="text" class="form-control" id="episodeTitle" placeholder="e.g., Chapter Five">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Duration</label>
+                        <input type="text" class="form-control" id="episodeDuration" placeholder="e.g., 55 min">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Release Date</label>
+                        <input type="text" class="form-control" id="episodeReleaseDate" placeholder="e.g., 15 March 2026">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Video URL</label>
+                        <div class="file-upload-group">
+                            <input type="text" class="form-control" id="episodeVideoUrl" placeholder="https://example.com/video.mp4 OR Google Drive ID">
+                            <button class="file-upload-btn" id="uploadEpisodeVideoBtn">📁 UPLOAD</button>
+                        </div>
+                        <input type="file" class="file-input" id="episodeVideoFile" accept="video/*">
+                    </div>
+                    
+                    <button class="admin-btn" id="addEpisodeToSeriesBtn">ADD EPISODE TO SERIES</button>
+                </div>
+
+                <!-- Banners Management -->
+                <div class="admin-form" id="bannersForm" style="display: none;">
+                    <h3>🖼️ MANAGE BANNERS (4 Slides)</h3>
+                    
+                    <div id="bannersContainer"></div>
+                    
+                    <button class="admin-btn" id="saveBannersBtn">SAVE BANNERS</button>
+                </div>
+
+                <!-- Delete Panel -->
+                <div class="delete-panel" id="deletePanel" style="display: none;">
+                    <h3>🗑️ DELETE CONTENT</h3>
+                    
+                    <div class="delete-search">
+                        <select id="deleteCategory" class="form-control" style="width: 200px;">
+                            <option value="hollywood">HOLLYWOOD</option>
+                            <option value="kdrama">K-DRAMA</option>
+                            <option value="bollywood">BOLLYWOOD</option>
+                            <option value="tollywood">TOLLYWOOD</option>
+                            <option value="anime">ANIME</option>
+                            <option value="classic">CLASSIC</option>
+                            <option value="horror">HORROR</option>
+                            <option value="series">SERIES</option>
+                        </select>
+                        <input type="text" id="deleteSearch" class="form-control" placeholder="Search by title...">
+                    </div>
+                    
+                    <div class="items-list" id="itemsList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Modal -->
+        <div class="search-modal" id="searchModal">
+            <span class="search-close" id="closeSearch">✕</span>
+            <input type="text" class="search-input" id="searchInput" placeholder="Search movies...">
+            <div class="search-results" id="searchResults"></div>
+        </div>
+
+        <div class="screen-bar" id="mainScreenBar">
+            🎬 CINEMA SCREEN · GLOBAL CHANNELS 🎬
+        </div>
+
+        <!-- Slider -->
+        <div class="slider-container" id="sliderContainer">
+            <button class="slider-btn prev" id="prevSlide">❮</button>
+            <div class="slider-wrapper">
+                <div class="slider" id="slider"></div>
+            </div>
+            <button class="slider-btn next" id="nextSlide">❯</button>
+            <div class="slider-dots" id="sliderDots"></div>
+        </div>
+
+        <!-- Series Page -->
+        <div class="series-page" id="seriesPage">
+            <div class="back-btn" id="backFromSeries">← BACK TO SERIES</div>
+            
+            <div class="series-header" id="seriesHeader">
+                <div class="series-poster" id="seriesPoster">
+                    <img src="" alt="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                    <span class="poster-emoji">📺</span>
+                </div>
+                <div class="series-info">
+                    <h1 class="series-title" id="seriesTitle"></h1>
+                    <div class="series-meta" id="seriesMeta"></div>
+                    <p class="series-description" id="seriesDescription"></p>
+                </div>
+            </div>
+
+            <!-- Series Video Player -->
+            <div class="series-video-player" id="seriesVideoPlayer">
+                <div class="series-video-wrapper">
+                    <video id="seriesPlyrVideo" controls crossorigin playsinline>
+                        <source src="" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+
+            <h2 class="episodes-title">📺 EPISODES</h2>
+            <div class="episodes-grid" id="episodesGrid"></div>
+        </div>
+
+        <!-- Video Player Section -->
+        <div class="video-player-section" id="videoPlayerSection">
+            <div class="live-full-header">
+                <div class="live-full-logo" id="videoSiteName">🎬 CINEVERSE · LIVE</div>
+                <div class="live-full-indicator" id="videoLiveBtn">
+                    <span class="live-full-dot"></span>
+                    <span class="live-full-text">LIVE</span>
+                    <span class="live-full-viewer" id="liveViewerCount">44.48k</span>
+                </div>
+            </div>
+            
+            <div class="live-full-screen">
+                🎬 CINEMA SCREEN · LIVE STREAM 🎬
+            </div>
+            
+            <button class="close-video" id="closeVideo">✕ CLOSE</button>
+            
+            <div class="live-full-content">
+                <div class="video-wrapper">
+                    <video id="plyrVideo" controls crossorigin playsinline autoplay>
+                        <source src="" type="video/mp4">
+                    </video>
+                </div>
+                
+                <div class="movie-details" id="movieDetails">
+                    <h2 class="movie-details-title" id="detailsTitle"></h2>
+                    <div class="movie-details-meta" id="detailsMeta"></div>
+                    <p class="movie-details-description" id="detailsDescription"></p>
+                    <a href="#" class="movie-details-link" id="detailsLink" target="_blank">
+                        <span>🔗</span> DOWNLOAD / WATCH LINK
+                    </a>
+                </div>
+
+                <div class="video-latest-section" id="videoLatestSection">
+                    <h2 class="video-latest-title">⏱️ LATEST VIEWED (12)</h2>
+                    <div class="latest-slider-container">
+                        <button class="latest-slider-btn prev" id="latestPrev">❮</button>
+                        <div class="latest-slider-wrapper">
+                            <div class="latest-slider" id="latestSlider"></div>
+                        </div>
+                        <button class="latest-slider-btn next" id="latestNext">❯</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="movie-section" id="movieSection">
+            <div class="movie-row" id="hollywoodRow">
+                <h2 class="row-title">🎬 HOLLYWOOD HITS</h2>
+                <div class="movie-grid" id="hollywoodGrid"></div>
+            </div>
+
+            <div class="movie-row" id="kdramaRow" style="display: none;">
+                <h2 class="row-title">🇰🇷 K-DRAMA WORLD</h2>
+                <div class="movie-grid" id="kdramaGrid"></div>
+            </div>
+
+            <div class="movie-row" id="bollywoodRow" style="display: none;">
+                <h2 class="row-title">🇮🇳 BOLLYWOOD MASALA</h2>
+                <div class="movie-grid" id="bollywoodGrid"></div>
+            </div>
+
+            <div class="movie-row" id="tollywoodRow" style="display: none;">
+                <h2 class="row-title">🇮🇳 TOLLYWOOD</h2>
+                <div class="movie-grid" id="tollywoodGrid"></div>
+            </div>
+
+            <div class="movie-row" id="animeRow" style="display: none;">
+                <h2 class="row-title">🇯🇵 ANIME</h2>
+                <div class="movie-grid" id="animeGrid"></div>
+            </div>
+
+            <div class="movie-row" id="classicRow" style="display: none;">
+                <h2 class="row-title">🎞️ CLASSIC</h2>
+                <div class="movie-grid" id="classicGrid"></div>
+            </div>
+
+            <div class="movie-row" id="horrorRow" style="display: none;">
+                <h2 class="row-title">👻 HORROR</h2>
+                <div class="movie-grid" id="horrorGrid"></div>
+            </div>
+
+            <div class="movie-row" id="seriesRow">
+                <h2 class="row-title">📺 POPULAR SERIES</h2>
+                <div class="movie-grid" id="seriesGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer" id="mainFooter">
+        <div class="footer-links">
+            <a class="footer-link" id="footerHome">🏠 HOME</a>
+            <a class="footer-link" id="footerMovies">🎬 MOVIES</a>
+            <a class="footer-link" id="footerLive">🔴 LIVE</a>
+            <a class="footer-link" id="footerSeries">📺 SERIES</a>
+            <a class="footer-link" id="footerAbout">📄 ABOUT</a>
+            <a class="footer-link" id="footerContact">📞 CONTACT</a>
+            <a class="footer-link" id="footerTerms">📜 TERMS</a>
+            <a class="footer-link" id="footerPrivacy">🔒 PRIVACY</a>
+        </div>
+        <div class="footer-copyright">
+            © 2026 CINEVERSE · All rights reserved · 44.48k watching now
+        </div>
+    </div>
+
+    <!-- Plyr JS -->
+    <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+    <script>
+        // Admin password
+        const ADMIN_PASSWORD = "cineverse123";
+        const MAX_VIEWED = 12;
+
+        // Initialize Plyr
+        let plyrPlayer = null;
+        let seriesPlyrPlayer = null;
+
+        // Data storage
+        let hollywoodMovies = JSON.parse(localStorage.getItem('hollywoodMovies')) || [];
+        let kdramaMovies = JSON.parse(localStorage.getItem('kdramaMovies')) || [];
+        let bollywoodMovies = JSON.parse(localStorage.getItem('bollywoodMovies')) || [];
+        let tollywoodMovies = JSON.parse(localStorage.getItem('tollywoodMovies')) || [];
+        let animeMovies = JSON.parse(localStorage.getItem('animeMovies')) || [];
+        let classicMovies = JSON.parse(localStorage.getItem('classicMovies')) || [];
+        let horrorMovies = JSON.parse(localStorage.getItem('horrorMovies')) || [];
+        let seriesList = JSON.parse(localStorage.getItem('seriesList')) || [];
+        let viewedMovies = JSON.parse(localStorage.getItem('viewedMovies')) || [];
+        let banners = JSON.parse(localStorage.getItem('banners')) || [
+            {
+                title: "HOLLYWOOD BLOCKBUSTER WEEK",
+                subtitle: "Biggest hits from 2025-2026",
+                imageUrl: "https://images.unsplash.com/photo-1535016120720-40c646be5580?w=1400",
+                videoId: "1s6L5r-1krzZFBnYyatU8-JS9dyyryLlx",
+                buttonText: "WATCH NOW"
+            },
+            {
+                title: "K-DRAMA SPECIAL",
+                subtitle: "Romance · Thriller · Fantasy",
+                imageUrl: "https://images.unsplash.com/photo-1589903308904-1010c2294adc?w=1400",
+                videoId: "1Qwx9q3P3nZ2fLmWXyKdR7tL8cVfG5hJkL",
+                buttonText: "WATCH NOW"
+            },
+            {
+                title: "BOLLYWOOD MEGA HITS",
+                subtitle: "Action · Romance · Comedy",
+                imageUrl: "https://images.unsplash.com/photo-1543536448-d9d2fcd70fad?w=1400",
+                videoId: "1A2B3C4D5E6F7G8H9I0J",
+                buttonText: "WATCH NOW"
+            },
+            {
+                title: "NEW RELEASES 2026",
+                subtitle: "Fresh from theaters",
+                imageUrl: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=1400",
+                videoId: "1s6L5r-1krzZFBnYyatU8-JS9dyyryLlx",
+                buttonText: "WATCH NOW"
+            }
+        ];
+
+        // Default Hollywood movies (5 samples)
+        if (hollywoodMovies.length === 0) {
+            hollywoodMovies = [
+                { 
+                    title: "THE BONE TEMPLE", 
+                    releaseDate: "15 March 2026",
+                    audio: "English, Hindi, Tamil",
+                    imdb: "8.5/10",
+                    duration: "2h 28min",
+                    description: "In a forgotten temple hidden deep within the jungles of Cambodia, a team of archaeologists uncovers an ancient secret that could change the course of humanity. Starring: Chris Hemsworth, Natalie Portman. Directed by Denis Villeneuve.", 
+                    thumbnail: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=300", 
+                    quality: "1080p", 
+                    videoUrl: "1s6L5r-1krzZFBnYyatU8-JS9dyyryLlx", 
+                    downloadLink: "https://drive.google.com/file/d/1s6L5r-1krzZFBnYyatU8-JS9dyyryLlx/view" 
+                },
+                { 
+                    title: "THE GUARDIANS OF THE GALAXY", 
+                    releaseDate: "5 May 2023",
+                    audio: "English",
+                    imdb: "8.0/10",
+                    duration: "2h 30min",
+                    description: "A group of intergalactic criminals must pull together to stop a fanatical warrior with plans to purge the universe.", 
+                    thumbnail: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=300", 
+                    quality: "4K", 
+                    videoUrl: "1s6L5r-1krzZFBnYyatU8-JS9dyyryLlx", 
+                    downloadLink: "https://drive.google.com/file/d/1s6L5r-1krzZFBnYyatU8-JS9dyyryLlx/view" 
+                },
+                { 
+                    title: "THE GUARDIANS OF THAILAND", 
+                    releaseDate: "12 August 2024",
+                    audio: "Thai, English",
+                    imdb: "7.5/10",
+                    duration: "2h 15min",
+                    description: "Ancient guardians rise to protect Thailand from a dark force threatening to destroy the kingdom.", 
+                    thumbnail: "https://images.unsplash.com/photo-1543536448-d9d2fcd70fad?w=300", 
+                    quality: "1080p", 
+                    videoUrl: "1s6L5r-1krzZFBnYyatU8-JS9dyyryLlx", 
+                    downloadLink: "https://drive.google.com/file/d/1s6L5r-1krzZFBnYyatU8-JS9dyyryLlx/view" 
+                },
+                { 
+                    title: "DUNE: PART THREE", 
+                    releaseDate: "20 October 2025",
+                    audio: "English",
+                    imdb: "8.8/10",
+                    duration: "2h 45min",
+                    description: "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.", 
+                    thumbnail: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=300", 
+                    quality: "4K", 
+                    videoUrl: "1s6L5r-1krzZFBnYyatU8-JS9dyyryLlx", 
+                    downloadLink: "https://drive.google.com/file/d/1s6L5r-1krzZFBnYyatU8-JS9dyyryLlx/view" 
+                },
+                { 
+                    title: "THE BATMAN 2", 
+                    releaseDate: "3 February 2026",
+                    audio: "English",
+                    imdb: "8.2/10",
+                    duration: "2h 55min",
+                    description: "The Dark Knight returns to face his greatest challenge yet as Gotham faces a new wave of crime.", 
+                    thumbnail: "https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=300", 
+                    quality: "4K", 
+                    videoUrl: "1s6L5r-1krzZFBnYyatU8-JS9dyyryLlx", 
+                    downloadLink: "https://drive.google.com/file/d/1s6L5r-1krzZFBnYyatU8-JS9dyyryLlx/view" 
+                }
+            ];
+        }
+
+        let currentSlide = 0;
+        let viewers = 44480;
+        let latestCurrentSlide = 0;
+        let currentSeriesId = null;
+        let episodeCount = 1;
+
+        // DOM elements
+        const videoPlayer = document.getElementById('plyrVideo');
+        const seriesVideoPlayer = document.getElementById('seriesPlyrVideo');
+        const videoSection = document.getElementById('videoPlayerSection');
+        const seriesPage = document.getElementById('seriesPage');
+        const seriesHeader = document.getElementById('seriesHeader');
+        const seriesVideoSection = document.getElementById('seriesVideoPlayer');
+        const movieSection = document.getElementById('movieSection');
+        const mainHeader = document.getElementById('mainHeader');
+        const mainScreenBar = document.getElementById('mainScreenBar');
+        const mainFooter = document.getElementById('mainFooter');
+        const liveViewerCountHeader = document.getElementById('liveViewerCountHeader');
+        const liveViewerCount = document.getElementById('liveViewerCount');
+        const liveBtn = document.getElementById('liveBtn');
+        const videoLiveBtn = document.getElementById('videoLiveBtn');
+        const closeVideo = document.getElementById('closeVideo');
+        const siteName = document.getElementById('siteName');
+        const videoSiteName = document.getElementById('videoSiteName');
+        const slider = document.getElementById('slider');
+        const dotsContainer = document.getElementById('sliderDots');
+        const sliderContainer = document.getElementById('sliderContainer');
+        const detailsTitle = document.getElementById('detailsTitle');
+        const detailsMeta = document.getElementById('detailsMeta');
+        const detailsDescription = document.getElementById('detailsDescription');
+        const detailsLink = document.getElementById('detailsLink');
+        const hollywoodRow = document.getElementById('hollywoodRow');
+        const kdramaRow = document.getElementById('kdramaRow');
+        const bollywoodRow = document.getElementById('bollywoodRow');
+        const tollywoodRow = document.getElementById('tollywoodRow');
+        const animeRow = document.getElementById('animeRow');
+        const classicRow = document.getElementById('classicRow');
+        const horrorRow = document.getElementById('horrorRow');
+        const seriesRow = document.getElementById('seriesRow');
+        const textHollywood = document.getElementById('textHollywood');
+        const textKdrama = document.getElementById('textKdrama');
+        const textBollywood = document.getElementById('textBollywood');
+        const textSeries = document.getElementById('textSeries');
+        const textTollywood = document.getElementById('textTollywood');
+        const textAnime = document.getElementById('textAnime');
+        const textClassic = document.getElementById('textClassic');
+        const textHorror = document.getElementById('textHorror');
+        const latestSlider = document.getElementById('latestSlider');
+        const videoLatestSection = document.getElementById('videoLatestSection');
+        const latestPrev = document.getElementById('latestPrev');
+        const latestNext = document.getElementById('latestNext');
+        const searchIcon = document.getElementById('searchIcon');
+        const searchModal = document.getElementById('searchModal');
+        const closeSearch = document.getElementById('closeSearch');
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        const backFromSeries = document.getElementById('backFromSeries');
+        const seriesTitle = document.getElementById('seriesTitle');
+        const seriesMeta = document.getElementById('seriesMeta');
+        const seriesDescription = document.getElementById('seriesDescription');
+        const seriesPoster = document.getElementById('seriesPoster');
+        const seriesPosterImg = seriesPoster.querySelector('img');
+        const seriesPosterEmoji = seriesPoster.querySelector('.poster-emoji');
+        const episodesGrid = document.getElementById('episodesGrid');
+        const adminIcon = document.getElementById('adminIcon');
+        const adminPanel = document.getElementById('adminPanel');
+        const closeAdmin = document.getElementById('closeAdmin');
+        const adminLogin = document.getElementById('adminLogin');
+        const adminContent = document.getElementById('adminContent');
+        const adminPassword = document.getElementById('adminPassword');
+        const loginBtn = document.getElementById('loginBtn');
+        const adminTabs = document.querySelectorAll('.admin-tab');
+        const moviesForm = document.getElementById('moviesForm');
+        const seriesForm = document.getElementById('seriesForm');
+        const editSeriesForm = document.getElementById('editSeriesForm');
+        const bannersForm = document.getElementById('bannersForm');
+        const deletePanel = document.getElementById('deletePanel');
+        const addMovieBtn = document.getElementById('addMovieBtn');
+        const addSeriesBtn = document.getElementById('addSeriesBtn');
+        const addEpisodeBtn = document.getElementById('addEpisodeBtn');
+        const episodesContainer = document.getElementById('episodesContainer');
+        const successMessage = document.getElementById('successMessage');
+        const selectSeries = document.getElementById('selectSeries');
+        const selectedSeriesInfo = document.getElementById('selectedSeriesInfo');
+        const selectedSeriesTitle = document.getElementById('selectedSeriesTitle');
+        const selectedSeriesDetails = document.getElementById('selectedSeriesDetails');
+        const currentEpisodeCount = document.getElementById('currentEpisodeCount');
+        const episodeNumber = document.getElementById('episodeNumber');
+        const episodeTitle = document.getElementById('episodeTitle');
+        const episodeDuration = document.getElementById('episodeDuration');
+        const episodeReleaseDate = document.getElementById('episodeReleaseDate');
+        const episodeVideoUrl = document.getElementById('episodeVideoUrl');
+        const addEpisodeToSeriesBtn = document.getElementById('addEpisodeToSeriesBtn');
+        const bannersContainer = document.getElementById('bannersContainer');
+        const saveBannersBtn = document.getElementById('saveBannersBtn');
+        const deleteCategory = document.getElementById('deleteCategory');
+        const deleteSearch = document.getElementById('deleteSearch');
+        const itemsList = document.getElementById('itemsList');
+
+        // File upload handlers
+        document.getElementById('uploadThumbnailBtn').addEventListener('click', () => {
+            document.getElementById('thumbnailFile').click();
+        });
+
+        document.getElementById('thumbnailFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const dataUrl = e.target.result;
+                    document.getElementById('movieThumbnail').value = dataUrl;
+                    document.getElementById('thumbnailPreview').innerHTML = `<img src="${dataUrl}" class="preview-image">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('uploadVideoBtn').addEventListener('click', () => {
+            document.getElementById('videoFile').click();
+        });
+
+        document.getElementById('videoFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const videoUrl = URL.createObjectURL(file);
+                document.getElementById('movieVideoUrl').value = videoUrl;
+                alert('✅ Video uploaded! Now click ADD MOVIE');
+            }
+        });
+
+        document.getElementById('uploadSeriesThumbnailBtn').addEventListener('click', () => {
+            document.getElementById('seriesThumbnailFile').click();
+        });
+
+        document.getElementById('seriesThumbnailFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const dataUrl = e.target.result;
+                    document.getElementById('seriesThumbnail').value = dataUrl;
+                    document.getElementById('seriesThumbnailPreview').innerHTML = `<img src="${dataUrl}" class="preview-image">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('uploadEpisodeVideoBtn').addEventListener('click', () => {
+            document.getElementById('episodeVideoFile').click();
+        });
+
+        document.getElementById('episodeVideoFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const videoUrl = URL.createObjectURL(file);
+                document.getElementById('episodeVideoUrl').value = videoUrl;
+                alert('✅ Episode video uploaded!');
+            }
+        });
+
+        // Admin panel
+        adminIcon.addEventListener('click', () => {
+            adminPanel.classList.add('show');
+            adminLogin.style.display = 'block';
+            adminContent.classList.remove('show');
+            adminPassword.value = '';
+        });
+
+        closeAdmin.addEventListener('click', () => {
+            adminPanel.classList.remove('show');
+            if (plyrPlayer) plyrPlayer.destroy();
+            if (seriesPlyrPlayer) seriesPlyrPlayer.destroy();
+        });
+
+        loginBtn.addEventListener('click', () => {
+            if (adminPassword.value === ADMIN_PASSWORD) {
+                adminLogin.style.display = 'none';
+                adminContent.classList.add('show');
+                loadSeriesDropdown();
+                loadBannersForm();
+                loadDeleteItems();
+            } else {
+                alert('❌ Wrong password!');
+            }
+        });
+
+        // Load series in dropdown
+        function loadSeriesDropdown() {
+            selectSeries.innerHTML = '<option value="">-- Select a series --</option>';
+            seriesList.forEach((series, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${series.title} (${series.episodes} episodes)`;
+                selectSeries.appendChild(option);
+            });
+        }
+
+        // Load banners form
+        function loadBannersForm() {
+            bannersContainer.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                const banner = banners[i] || { title: '', subtitle: '', imageUrl: '', videoId: '', buttonText: '' };
+                const bannerDiv = document.createElement('div');
+                bannerDiv.className = 'episode-item';
+                bannerDiv.innerHTML = `
+                    <h4 style="color: #ff6b6b; margin-bottom: 1rem;">SLIDE ${i + 1}</h4>
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" class="form-control banner-title" value="${banner.title || ''}" placeholder="Banner title">
+                    </div>
+                    <div class="form-group">
+                        <label>Subtitle</label>
+                        <input type="text" class="form-control banner-subtitle" value="${banner.subtitle || ''}" placeholder="Banner subtitle">
+                    </div>
+                    <div class="form-group">
+                        <label>Image URL</label>
+                        <input type="text" class="form-control banner-image" value="${banner.imageUrl || ''}" placeholder="https://example.com/banner.jpg">
+                        ${banner.imageUrl ? `<img src="${banner.imageUrl}" class="banner-thumb" onerror="this.style.display='none'">` : ''}
+                    </div>
+                    <div class="form-group">
+                        <label>Video ID / URL</label>
+                        <input type="text" class="form-control banner-video" value="${banner.videoId || ''}" placeholder="Google Drive ID or video URL">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Text</label>
+                        <input type="text" class="form-control banner-button" value="${banner.buttonText || 'WATCH NOW'}" placeholder="WATCH NOW">
+                    </div>
+                `;
+                bannersContainer.appendChild(bannerDiv);
+            }
+        }
+
+        // Save banners
+        saveBannersBtn.addEventListener('click', () => {
+            const newBanners = [];
+            document.querySelectorAll('.episode-item').forEach((item, index) => {
+                if (index < 4) {
+                    newBanners.push({
+                        title: item.querySelector('.banner-title')?.value || '',
+                        subtitle: item.querySelector('.banner-subtitle')?.value || '',
+                        imageUrl: item.querySelector('.banner-image')?.value || '',
+                        videoId: item.querySelector('.banner-video')?.value || '',
+                        buttonText: item.querySelector('.banner-button')?.value || 'WATCH NOW'
+                    });
+                }
+            });
+            banners = newBanners;
+            localStorage.setItem('banners', JSON.stringify(banners));
+            updateSlider();
+            successMessage.classList.add('show');
+            setTimeout(() => successMessage.classList.remove('show'), 3000);
+        });
+
+        // When series is selected
+        selectSeries.addEventListener('change', () => {
+            const index = selectSeries.value;
+            if (index !== '') {
+                const series = seriesList[index];
+                selectedSeriesInfo.style.display = 'block';
+                selectedSeriesTitle.textContent = series.title;
+                selectedSeriesDetails.textContent = `${series.season} • ${series.year} • ${series.genre} • IMDb: ${series.imdb || 'N/A'}`;
+                currentEpisodeCount.textContent = series.episodes;
+                
+                const nextEpisode = series.episodesList.length + 1;
+                episodeNumber.value = nextEpisode;
+            } else {
+                selectedSeriesInfo.style.display = 'none';
+                episodeNumber.value = '';
+            }
+        });
+
+        // Add episode to existing series
+        addEpisodeToSeriesBtn.addEventListener('click', () => {
+            const index = selectSeries.value;
+            if (index === '') {
+                alert('Please select a series!');
+                return;
+            }
+
+            const title = episodeTitle.value;
+            const duration = episodeDuration.value;
+            const releaseDate = episodeReleaseDate.value;
+            const videoUrl = episodeVideoUrl.value;
+
+            if (!title || !duration || !videoUrl) {
+                alert('Please fill all episode fields!');
+                return;
+            }
+
+            const series = seriesList[index];
+            const newEpisode = {
+                number: series.episodesList.length + 1,
+                title: title,
+                duration: duration,
+                releaseDate: releaseDate || 'TBA',
+                videoUrl: videoUrl
+            };
+
+            series.episodesList.push(newEpisode);
+            series.episodes = series.episodesList.length;
+            
+            localStorage.setItem('seriesList', JSON.stringify(seriesList));
+
+            episodeTitle.value = '';
+            episodeDuration.value = '';
+            episodeReleaseDate.value = '';
+            episodeVideoUrl.value = '';
+            
+            loadSeriesDropdown();
+            selectSeries.value = index;
+            selectedSeriesTitle.textContent = series.title;
+            currentEpisodeCount.textContent = series.episodes;
+            episodeNumber.value = series.episodesList.length + 1;
+
+            successMessage.classList.add('show');
+            setTimeout(() => successMessage.classList.remove('show'), 3000);
+
+            refreshAllGrids();
+        });
+
+        // Load delete items
+        function loadDeleteItems() {
+            const category = deleteCategory.value;
+            const searchTerm = deleteSearch.value.toLowerCase();
+            
+            let items = [];
+            if (category === 'hollywood') items = hollywoodMovies.map((item, index) => ({...item, type: 'movie', category: 'hollywood', index}));
+            else if (category === 'kdrama') items = kdramaMovies.map((item, index) => ({...item, type: 'movie', category: 'kdrama', index}));
+            else if (category === 'bollywood') items = bollywoodMovies.map((item, index) => ({...item, type: 'movie', category: 'bollywood', index}));
+            else if (category === 'tollywood') items = tollywoodMovies.map((item, index) => ({...item, type: 'movie', category: 'tollywood', index}));
+            else if (category === 'anime') items = animeMovies.map((item, index) => ({...item, type: 'movie', category: 'anime', index}));
+            else if (category === 'classic') items = classicMovies.map((item, index) => ({...item, type: 'movie', category: 'classic', index}));
+            else if (category === 'horror') items = horrorMovies.map((item, index) => ({...item, type: 'movie', category: 'horror', index}));
+            else if (category === 'series') items = seriesList.map((item, index) => ({...item, type: 'series', category: 'series', index}));
+            
+            if (searchTerm) {
+                items = items.filter(item => item.title.toLowerCase().includes(searchTerm));
+            }
+            
+            itemsList.innerHTML = '';
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'delete-item';
+                div.innerHTML = `
+                    <img src="${item.thumbnail || 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=50'}" alt="${item.title}">
+                    <div class="delete-item-info">
+                        <div class="delete-item-title">${item.title}</div>
+                        <div class="delete-item-meta">${item.type === 'series' ? `${item.episodes} episodes` : `${item.quality || 'HD'} • ${item.releaseDate || ''}`}</div>
+                    </div>
+                    <button class="delete-btn" data-type="${item.type}" data-category="${item.category}" data-index="${item.index}">DELETE</button>
+                `;
+                itemsList.appendChild(div);
+            });
+        }
+
+        // Delete item
+        function deleteItem(type, category, index) {
+            if (type === 'movie') {
+                if (category === 'hollywood') {
+                    hollywoodMovies.splice(index, 1);
+                    localStorage.setItem('hollywoodMovies', JSON.stringify(hollywoodMovies));
+                } else if (category === 'kdrama') {
+                    kdramaMovies.splice(index, 1);
+                    localStorage.setItem('kdramaMovies', JSON.stringify(kdramaMovies));
+                } else if (category === 'bollywood') {
+                    bollywoodMovies.splice(index, 1);
+                    localStorage.setItem('bollywoodMovies', JSON.stringify(bollywoodMovies));
+                } else if (category === 'tollywood') {
+                    tollywoodMovies.splice(index, 1);
+                    localStorage.setItem('tollywoodMovies', JSON.stringify(tollywoodMovies));
+                } else if (category === 'anime') {
+                    animeMovies.splice(index, 1);
+                    localStorage.setItem('animeMovies', JSON.stringify(animeMovies));
+                } else if (category === 'classic') {
+                    classicMovies.splice(index, 1);
+                    localStorage.setItem('classicMovies', JSON.stringify(classicMovies));
+                } else if (category === 'horror') {
+                    horrorMovies.splice(index, 1);
+                    localStorage.setItem('horrorMovies', JSON.stringify(horrorMovies));
+                }
+            } else if (type === 'series') {
+                seriesList.splice(index, 1);
+                localStorage.setItem('seriesList', JSON.stringify(seriesList));
+            }
+            
+            loadDeleteItems();
+            refreshAllGrids();
+            loadSeriesDropdown();
+            
+            successMessage.textContent = '✅ Deleted Successfully!';
+            successMessage.classList.add('show');
+            setTimeout(() => successMessage.classList.remove('show'), 3000);
+        }
+
+        // Delete panel event listeners
+        deleteCategory.addEventListener('change', loadDeleteItems);
+        deleteSearch.addEventListener('input', loadDeleteItems);
+
+        itemsList.addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-btn')) {
+                const type = e.target.dataset.type;
+                const category = e.target.dataset.category;
+                const index = parseInt(e.target.dataset.index);
+                
+                if (confirm(`Are you sure you want to delete this ${type}?`)) {
+                    deleteItem(type, category, index);
+                }
+            }
+        });
+
+        // Tab switching
+        adminTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                adminTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                moviesForm.style.display = 'none';
+                seriesForm.style.display = 'none';
+                editSeriesForm.style.display = 'none';
+                bannersForm.style.display = 'none';
+                deletePanel.style.display = 'none';
+                
+                if (tab.dataset.tab === 'movies') {
+                    moviesForm.style.display = 'block';
+                } else if (tab.dataset.tab === 'series') {
+                    seriesForm.style.display = 'block';
+                } else if (tab.dataset.tab === 'edit-series') {
+                    editSeriesForm.style.display = 'block';
+                    loadSeriesDropdown();
+                } else if (tab.dataset.tab === 'banners') {
+                    bannersForm.style.display = 'block';
+                } else if (tab.dataset.tab === 'delete') {
+                    deletePanel.style.display = 'block';
+                    loadDeleteItems();
+                }
+            });
+        });
+
+        // Episode management for new series
+        function addEpisodeField() {
+            const episodeDiv = document.createElement('div');
+            episodeDiv.className = 'episode-item';
+            episodeDiv.innerHTML = `
+                <button class="remove-episode" onclick="this.parentElement.remove()">✕</button>
+                <div class="form-group">
+                    <label>Episode Number</label>
+                    <input type="number" class="form-control episode-number" value="${episodeCount}" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Episode Title</label>
+                    <input type="text" class="form-control episode-title" placeholder="e.g., Chapter One">
+                </div>
+                <div class="form-group">
+                    <label>Duration</label>
+                    <input type="text" class="form-control episode-duration" placeholder="e.g., 55 min">
+                </div>
+                <div class="form-group">
+                    <label>Release Date</label>
+                    <input type="text" class="form-control episode-release" placeholder="e.g., 15 March 2026">
+                </div>
+                <div class="form-group">
+                    <label>Video URL</label>
+                    <input type="text" class="form-control episode-video" placeholder="https://example.com/video.mp4">
+                </div>
+            `;
+            episodesContainer.appendChild(episodeDiv);
+            episodeCount++;
+        }
+
+        addEpisodeBtn.addEventListener('click', addEpisodeField);
+
+        // Add movie
+        addMovieBtn.addEventListener('click', () => {
+            const title = document.getElementById('movieTitle').value;
+            const releaseDate = document.getElementById('movieReleaseDate').value;
+            const audio = document.getElementById('movieAudio').value;
+            const imdb = document.getElementById('movieImdb').value;
+            const duration = document.getElementById('movieDuration').value;
+            const description = document.getElementById('movieDescription').value;
+            const thumbnail = document.getElementById('movieThumbnail').value;
+            const quality = document.getElementById('movieQuality').value;
+            const channel = document.getElementById('movieChannel').value;
+            const videoUrl = document.getElementById('movieVideoUrl').value;
+            const downloadLink = document.getElementById('movieDownloadLink').value || videoUrl;
+
+            if (!title || !description || !thumbnail || !videoUrl) {
+                alert('Please fill all required fields!');
+                return;
+            }
+
+            const movie = { 
+                title, 
+                releaseDate: releaseDate || 'TBA',
+                audio: audio || 'English',
+                imdb: imdb || 'N/A',
+                duration: duration || 'N/A',
+                description, 
+                thumbnail, 
+                quality, 
+                videoUrl, 
+                downloadLink 
+            };
+
+            if (channel === 'hollywood') {
+                hollywoodMovies.push(movie);
+                localStorage.setItem('hollywoodMovies', JSON.stringify(hollywoodMovies));
+            } else if (channel === 'kdrama') {
+                kdramaMovies.push(movie);
+                localStorage.setItem('kdramaMovies', JSON.stringify(kdramaMovies));
+            } else if (channel === 'bollywood') {
+                bollywoodMovies.push(movie);
+                localStorage.setItem('bollywoodMovies', JSON.stringify(bollywoodMovies));
+            } else if (channel === 'tollywood') {
+                tollywoodMovies.push(movie);
+                localStorage.setItem('tollywoodMovies', JSON.stringify(tollywoodMovies));
+            } else if (channel === 'anime') {
+                animeMovies.push(movie);
+                localStorage.setItem('animeMovies', JSON.stringify(animeMovies));
+            } else if (channel === 'classic') {
+                classicMovies.push(movie);
+                localStorage.setItem('classicMovies', JSON.stringify(classicMovies));
+            } else if (channel === 'horror') {
+                horrorMovies.push(movie);
+                localStorage.setItem('horrorMovies', JSON.stringify(horrorMovies));
+            }
+
+            // Clear form
+            document.getElementById('movieTitle').value = '';
+            document.getElementById('movieReleaseDate').value = '';
+            document.getElementById('movieAudio').value = '';
+            document.getElementById('movieImdb').value = '';
+            document.getElementById('movieDuration').value = '';
+            document.getElementById('movieDescription').value = '';
+            document.getElementById('movieThumbnail').value = '';
+            document.getElementById('movieVideoUrl').value = '';
+            document.getElementById('movieDownloadLink').value = '';
+            document.getElementById('thumbnailPreview').innerHTML = '';
+
+            successMessage.textContent = '✅ Movie Added Successfully!';
+            successMessage.classList.add('show');
+            setTimeout(() => successMessage.classList.remove('show'), 3000);
+
+            refreshAllGrids();
+        });
+
+        // Add new series
+        addSeriesBtn.addEventListener('click', () => {
+            const title = document.getElementById('seriesTitle').value;
+            const year = document.getElementById('seriesYear').value;
+            const season = document.getElementById('seriesSeason').value;
+            const genre = document.getElementById('seriesGenre').value;
+            const audio = document.getElementById('seriesAudio').value;
+            const imdb = document.getElementById('seriesImdb').value;
+            const description = document.getElementById('seriesDescription').value;
+            const thumbnail = document.getElementById('seriesThumbnail').value;
+
+            if (!title || !description || !thumbnail) {
+                alert('Please fill all fields!');
+                return;
+            }
+
+            const episodes = [];
+            document.querySelectorAll('.episode-item').forEach(item => {
+                const number = item.querySelector('.episode-number')?.value;
+                const epTitle = item.querySelector('.episode-title')?.value;
+                const duration = item.querySelector('.episode-duration')?.value;
+                const release = item.querySelector('.episode-release')?.value;
+                const video = item.querySelector('.episode-video')?.value;
+                
+                if (number && epTitle && duration && video) {
+                    episodes.push({
+                        number: parseInt(number),
+                        title: epTitle,
+                        duration: duration,
+                        releaseDate: release || 'TBA',
+                        videoUrl: video
+                    });
+                }
+            });
+
+            const series = {
+                id: title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now(),
+                title,
+                year: year || '2025',
+                season: season || 'Season 1',
+                genre: genre || 'Drama',
+                audio: audio || 'English',
+                imdb: imdb || 'N/A',
+                description,
+                thumbnail,
+                episodes: episodes.length,
+                episodesList: episodes
+            };
+
+            seriesList.push(series);
+            localStorage.setItem('seriesList', JSON.stringify(seriesList));
+
+            // Clear form
+            document.getElementById('seriesTitle').value = '';
+            document.getElementById('seriesYear').value = '';
+            document.getElementById('seriesSeason').value = '';
+            document.getElementById('seriesGenre').value = '';
+            document.getElementById('seriesAudio').value = '';
+            document.getElementById('seriesImdb').value = '';
+            document.getElementById('seriesDescription').value = '';
+            document.getElementById('seriesThumbnail').value = '';
+            document.getElementById('seriesThumbnailPreview').innerHTML = '';
+            episodesContainer.innerHTML = '';
+            episodeCount = 1;
+
+            successMessage.textContent = '✅ Series Added Successfully!';
+            successMessage.classList.add('show');
+            setTimeout(() => successMessage.classList.remove('show'), 3000);
+
+            refreshAllGrids();
+        });
+
+        // Update slider
+        function updateSlider() {
+            slider.innerHTML = '';
+            dotsContainer.innerHTML = '';
+            
+            banners.forEach((banner, index) => {
+                const slide = document.createElement('div');
+                slide.className = 'slide';
+                slide.dataset.videoId = banner.videoId;
+                slide.dataset.title = banner.title;
+                slide.dataset.description = banner.subtitle;
+                slide.dataset.link = `https://drive.google.com/file/d/${banner.videoId}/view`;
+                slide.dataset.isBanner = 'true';
+                
+                slide.innerHTML = `
+                    <img src="${banner.imageUrl}" alt="${banner.title}">
+                    <div class="slide-content">
+                        <div class="slide-title">${banner.title}</div>
+                        <div class="slide-subtitle">${banner.subtitle}</div>
+                    </div>
+                `;
+                
+                slide.addEventListener('click', () => {
+                    playVideo(
+                        banner.videoId,
+                        banner.title,
+                        banner.subtitle,
+                        `https://drive.google.com/file/d/${banner.videoId}/view`,
+                        {
+                            title: banner.title,
+                            thumbnail: banner.imageUrl,
+                            quality: '4K',
+                            channel: 'featured',
+                            isBanner: true
+                        },
+                        true
+                    );
+                });
+                
+                slider.appendChild(slide);
+                
+                const dot = document.createElement('span');
+                dot.className = `dot ${index === 0 ? 'active' : ''}`;
+                dot.addEventListener('click', () => updateSlide(index));
+                dotsContainer.appendChild(dot);
+            });
+            
+            currentSlide = 0;
+            updateSlide(0);
+        }
+
+        function updateSlide(index) {
+            slider.style.transform = `translateX(-${index * 100}%)`;
+            document.querySelectorAll('.dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+            currentSlide = index;
+        }
+
+        document.getElementById('nextSlide')?.addEventListener('click', () => {
+            currentSlide = (currentSlide + 1) % banners.length;
+            updateSlide(currentSlide);
+        });
+
+        document.getElementById('prevSlide')?.addEventListener('click', () => {
+            currentSlide = (currentSlide - 1 + banners.length) % banners.length;
+            updateSlide(currentSlide);
+        });
+
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % banners.length;
+            updateSlide(currentSlide);
+        }, 5000);
+
+        // All content for search
+        function allContent() {
+            const movies = [
+                ...hollywoodMovies.map(m => ({...m, type: 'movie', channel: 'hollywood'})),
+                ...kdramaMovies.map(m => ({...m, type: 'movie', channel: 'kdrama'})),
+                ...bollywoodMovies.map(m => ({...m, type: 'movie', channel: 'bollywood'})),
+                ...tollywoodMovies.map(m => ({...m, type: 'movie', channel: 'tollywood'})),
+                ...animeMovies.map(m => ({...m, type: 'movie', channel: 'anime'})),
+                ...classicMovies.map(m => ({...m, type: 'movie', channel: 'classic'})),
+                ...horrorMovies.map(m => ({...m, type: 'movie', channel: 'horror'})),
+                ...seriesList.map(s => ({...s, type: 'series'}))
+            ];
+            return movies;
+        }
+
+        // Search functionality
+        searchIcon.addEventListener('click', () => {
+            searchModal.classList.add('show');
+            searchInput.focus();
+        });
+
+        closeSearch.addEventListener('click', () => {
+            searchModal.classList.remove('show');
+            searchInput.value = '';
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            if (query.length < 2) {
+                searchResults.innerHTML = '';
+                return;
+            }
+
+            const results = allContent().filter(item => 
+                item.title.toLowerCase().includes(query)
+            ).slice(0, 12);
+
+            searchResults.innerHTML = '';
+            results.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'result-card';
+                card.innerHTML = `
+                    <div class="movie-poster">
+                        <img src="${item.thumbnail || 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=200'}" alt="${item.title}" style="width:100%; height:100%; object-fit:cover;">
+                    </div>
+                    <div class="movie-info">
+                        <div class="movie-card-title">${item.title}</div>
+                        <div class="movie-meta">
+                            <span>${item.type === 'series' ? '📺 SERIES' : `🔥 ${item.quality || 'HD'}`}</span>
+                            <span class="${item.type === 'series' ? 'series-badge' : 'movie-badge'}">${item.type === 'series' ? 'SERIES' : item.channel?.toUpperCase()}</span>
+                        </div>
+                    </div>
+                `;
+                
+                if (item.type === 'series') {
+                    card.addEventListener('click', () => {
+                        showSeriesPage(item.id);
+                        searchModal.classList.remove('show');
+                        searchInput.value = '';
+                    });
+                } else {
+                    card.addEventListener('click', () => {
+                        playVideo(
+                            item.videoUrl,
+                            item.title,
+                            item.description,
+                            item.downloadLink || item.videoUrl,
+                            {
+                                title: item.title,
+                                thumbnail: item.thumbnail,
+                                quality: item.quality,
+                                channel: item.channel,
+                                releaseDate: item.releaseDate,
+                                audio: item.audio,
+                                imdb: item.imdb,
+                                duration: item.duration
+                            }
+                        );
+                        searchModal.classList.remove('show');
+                        searchInput.value = '';
+                    });
+                }
+                
+                searchResults.appendChild(card);
+            });
+        });
+
+        function showHomePage() {
+            videoSection.classList.remove('active');
+            seriesPage.classList.remove('show');
+            if (plyrPlayer) plyrPlayer.destroy();
+            if (seriesPlyrPlayer) seriesPlyrPlayer.destroy();
+            
+            mainHeader.style.display = 'flex';
+            mainScreenBar.style.display = 'block';
+            mainFooter.style.display = 'block';
+            movieSection.style.display = 'block';
+            
+            document.querySelectorAll('.channel-text').forEach(el => el.classList.remove('active'));
+            
+            hollywoodRow.style.display = 'block';
+            kdramaRow.style.display = 'none';
+            bollywoodRow.style.display = 'none';
+            tollywoodRow.style.display = 'none';
+            animeRow.style.display = 'none';
+            classicRow.style.display = 'none';
+            horrorRow.style.display = 'none';
+            seriesRow.style.display = 'block';
+        }
+
+        function showSeriesListing() {
+            videoSection.classList.remove('active');
+            seriesPage.classList.remove('show');
+            if (plyrPlayer) plyrPlayer.destroy();
+            if (seriesPlyrPlayer) seriesPlyrPlayer.destroy();
+            
+            mainHeader.style.display = 'flex';
+            mainScreenBar.style.display = 'block';
+            mainFooter.style.display = 'block';
+            movieSection.style.display = 'block';
+            
+            document.querySelectorAll('.channel-text').forEach(el => el.classList.remove('active'));
+            textSeries.classList.add('active');
+            
+            hollywoodRow.style.display = 'none';
+            kdramaRow.style.display = 'none';
+            bollywoodRow.style.display = 'none';
+            tollywoodRow.style.display = 'none';
+            animeRow.style.display = 'none';
+            classicRow.style.display = 'none';
+            horrorRow.style.display = 'none';
+            seriesRow.style.display = 'block';
+        }
+
+        function showSeriesPage(seriesId) {
+            const series = seriesList.find(s => s.id === seriesId);
+            if (!series) return;
+
+            currentSeriesId = seriesId;
+            
+            videoSection.classList.remove('active');
+            if (plyrPlayer) plyrPlayer.destroy();
+            if (seriesPlyrPlayer) seriesPlyrPlayer.destroy();
+            
+            movieSection.style.display = 'none';
+            mainScreenBar.style.display = 'none';
+            
+            seriesHeader.classList.remove('hide');
+            seriesVideoSection.classList.remove('show');
+            
+            seriesTitle.textContent = series.title;
+            
+            seriesMeta.innerHTML = `
+                <span class="series-meta-item">📅 ${series.year || '2025'}</span>
+                <span class="series-meta-item">📺 ${series.season || 'Season 1'}</span>
+                <span class="series-meta-item">🎬 ${series.genre || 'Drama'}</span>
+                <span class="series-meta-item">🔊 ${series.audio || 'English'}</span>
+                <span class="series-meta-item">⭐ IMDb ${series.imdb || 'N/A'}</span>
+            `;
+            
+            seriesDescription.textContent = series.description;
+            
+            if (series.thumbnail) {
+                seriesPosterImg.src = series.thumbnail;
+                seriesPosterImg.style.display = 'block';
+                seriesPosterEmoji.style.display = 'none';
+            } else {
+                seriesPosterImg.style.display = 'none';
+                seriesPosterEmoji.style.display = 'block';
+                seriesPosterEmoji.textContent = '📺';
+            }
+
+            episodesGrid.innerHTML = '';
+            series.episodesList.forEach(ep => {
+                const card = document.createElement('div');
+                card.className = 'episode-card';
+                card.dataset.episodeNumber = ep.number;
+                card.innerHTML = `
+                    <div class="episode-thumb">
+                        <span class="episode-number">E${ep.number}</span>
+                        📺
+                    </div>
+                    <div class="episode-info">
+                        <div class="episode-title">${ep.title}</div>
+                        <div class="episode-duration">${ep.duration} • ${ep.releaseDate || 'TBA'}</div>
+                    </div>
+                `;
+                card.addEventListener('click', () => playSeriesEpisode(series, ep));
+                episodesGrid.appendChild(card);
+            });
+
+            seriesPage.classList.add('show');
+        }
+
+        function playSeriesEpisode(series, episode) {
+            seriesHeader.classList.add('hide');
+            seriesVideoSection.classList.add('show');
+            
+            document.querySelectorAll('.episode-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            const activeCard = Array.from(document.querySelectorAll('.episode-card')).find(
+                card => card.dataset.episodeNumber == episode.number
+            );
+            if (activeCard) {
+                activeCard.classList.add('active');
+            }
+            
+            if (episode.videoUrl.includes('http')) {
+                if (episode.videoUrl.includes('drive.google.com')) {
+                    const fileId = episode.videoUrl.match(/[-\w]{25,}/);
+                    if (fileId) {
+                        seriesVideoPlayer.src = `https://drive.google.com/file/d/${fileId[0]}/preview`;
+                    } else {
+                        seriesVideoPlayer.src = episode.videoUrl;
+                    }
+                } else {
+                    seriesVideoPlayer.src = episode.videoUrl;
+                }
+                seriesVideoPlayer.type = 'video/mp4';
+            } else if (episode.videoUrl.length > 20) {
+                seriesVideoPlayer.src = `https://drive.google.com/file/d/${episode.videoUrl}/preview`;
+            } else {
+                seriesVideoPlayer.src = episode.videoUrl;
+            }
+            
+            if (seriesPlyrPlayer) seriesPlyrPlayer.destroy();
+            seriesPlyrPlayer = new Plyr(seriesVideoPlayer, {
+                controls: ['play-large', 'play', 'progress', 'current-time', 'duration', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'],
+                settings: ['captions', 'quality', 'speed', 'loop'],
+                quality: { default: 1080, options: [4320, 2880, 2160, 1440, 1080, 720, 576, 480, 360, 240] },
+                speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] },
+                autoplay: true
+            });
+            
+            saveToViewed({
+                videoUrl: episode.videoUrl,
+                title: `${series.title} - E${episode.number}: ${episode.title}`,
+                description: series.description,
+                link: episode.videoUrl.includes('http') ? episode.videoUrl : `https://drive.google.com/file/d/${episode.videoUrl}/view`,
+                thumbnail: series.thumbnail,
+                quality: 'HD',
+                channel: 'series'
+            });
+        }
+
+        function showLiveFullPage() {
+            mainHeader.style.display = 'none';
+            mainScreenBar.style.display = 'none';
+            mainFooter.style.display = 'none';
+            movieSection.style.display = 'none';
+            seriesPage.classList.remove('show');
+            
+            videoSection.classList.add('active');
+            
+            updateVideoLatestSection();
+        }
+
+        function updateVideoLatestSection() {
+            if (viewedMovies.length > 0) {
+                videoLatestSection.style.display = 'block';
+                latestSlider.innerHTML = '';
+                
+                const recentMovies = viewedMovies.slice(-MAX_VIEWED).reverse();
+                
+                recentMovies.forEach(movie => {
+                    const slide = document.createElement('div');
+                    slide.className = 'latest-slide';
+                    
+                    const card = document.createElement('div');
+                    card.className = 'video-latest-card';
+                    card.dataset.videoUrl = movie.videoUrl;
+                    card.dataset.title = movie.title;
+                    card.dataset.description = movie.description;
+                    card.dataset.link = movie.link;
+                    
+                    card.innerHTML = `
+                        <div class="video-latest-poster">
+                            <img src="${movie.thumbnail || 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=200'}" alt="" style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+                        <div class="video-latest-info">
+                            <div class="video-latest-title-text">${movie.title.replace(' (2026)', '')}</div>
+                            <div class="video-latest-badge">${movie.channel.toUpperCase()}</div>
+                        </div>
+                    `;
+                    
+                    card.addEventListener('click', () => {
+                        if (movie.channel === 'series') {
+                            const [seriesTitle, episodeInfo] = movie.title.split(' - E');
+                            const series = seriesList.find(s => s.title === seriesTitle);
+                            if (series && episodeInfo) {
+                                const episodeNum = parseInt(episodeInfo.split(':')[0]);
+                                const episode = series.episodesList.find(e => e.number === episodeNum);
+                                if (episode) {
+                                    showSeriesPage(series.id);
+                                    setTimeout(() => playSeriesEpisode(series, episode), 500);
+                                }
+                            }
+                        } else {
+                            playVideo(
+                                movie.videoUrl,
+                                movie.title,
+                                movie.description,
+                                movie.link,
+                                movie
+                            );
+                        }
+                    });
+                    
+                    slide.appendChild(card);
+                    latestSlider.appendChild(slide);
+                });
+                
+                latestCurrentSlide = 0;
+                updateLatestSlider();
+            } else {
+                videoLatestSection.style.display = 'none';
+            }
+        }
+
+        function updateLatestSlider() {
+            const slideWidth = 100 / MAX_VIEWED;
+            latestSlider.style.transform = `translateX(-${latestCurrentSlide * slideWidth}%)`;
+        }
+
+        latestPrev?.addEventListener('click', () => {
+            if (viewedMovies.length > MAX_VIEWED) {
+                latestCurrentSlide = Math.max(0, latestCurrentSlide - 1);
+                updateLatestSlider();
+            }
+        });
+
+        latestNext?.addEventListener('click', () => {
+            const maxSlides = Math.ceil(viewedMovies.length / MAX_VIEWED) - 1;
+            if (latestCurrentSlide < maxSlides) {
+                latestCurrentSlide++;
+                updateLatestSlider();
+            }
+        });
+
+        function createMovieCards() {
+            const hollywoodGrid = document.getElementById('hollywoodGrid');
+            const kdramaGrid = document.getElementById('kdramaGrid');
+            const bollywoodGrid = document.getElementById('bollywoodGrid');
+            const tollywoodGrid = document.getElementById('tollywoodGrid');
+            const animeGrid = document.getElementById('animeGrid');
+            const classicGrid = document.getElementById('classicGrid');
+            const horrorGrid = document.getElementById('horrorGrid');
+            
+            if (hollywoodGrid) {
+                hollywoodGrid.innerHTML = '';
+                hollywoodMovies.forEach(movie => {
+                    const card = createMovieCard(movie, 'hollywood');
+                    hollywoodGrid.appendChild(card);
+                });
+            }
+
+            if (kdramaGrid) {
+                kdramaGrid.innerHTML = '';
+                kdramaMovies.forEach(movie => {
+                    const card = createMovieCard(movie, 'kdrama');
+                    kdramaGrid.appendChild(card);
+                });
+            }
+
+            if (bollywoodGrid) {
+                bollywoodGrid.innerHTML = '';
+                bollywoodMovies.forEach(movie => {
+                    const card = createMovieCard(movie, 'bollywood');
+                    bollywoodGrid.appendChild(card);
+                });
+            }
+
+            if (tollywoodGrid) {
+                tollywoodGrid.innerHTML = '';
+                tollywoodMovies.forEach(movie => {
+                    const card = createMovieCard(movie, 'tollywood');
+                    tollywoodGrid.appendChild(card);
+                });
+            }
+
+            if (animeGrid) {
+                animeGrid.innerHTML = '';
+                animeMovies.forEach(movie => {
+                    const card = createMovieCard(movie, 'anime');
+                    animeGrid.appendChild(card);
+                });
+            }
+
+            if (classicGrid) {
+                classicGrid.innerHTML = '';
+                classicMovies.forEach(movie => {
+                    const card = createMovieCard(movie, 'classic');
+                    classicGrid.appendChild(card);
+                });
+            }
+
+            if (horrorGrid) {
+                horrorGrid.innerHTML = '';
+                horrorMovies.forEach(movie => {
+                    const card = createMovieCard(movie, 'horror');
+                    horrorGrid.appendChild(card);
+                });
+            }
+        }
+
+        function createMovieCard(movie, channel) {
+            const card = document.createElement('div');
+            card.className = 'movie-card';
+            card.dataset.videoUrl = movie.videoUrl;
+            card.dataset.title = movie.title;
+            card.dataset.description = movie.description;
+            card.dataset.link = movie.downloadLink || movie.videoUrl;
+            card.dataset.thumbnail = movie.thumbnail;
+            card.dataset.quality = movie.quality;
+            card.dataset.channel = channel;
+            card.dataset.releaseDate = movie.releaseDate;
+            card.dataset.audio = movie.audio;
+            card.dataset.imdb = movie.imdb;
+            card.dataset.duration = movie.duration;
+            
+            card.innerHTML = `
+                <div class="movie-poster">
+                    <img src="${movie.thumbnail || 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=200'}" alt="${movie.title}">
+                </div>
+                <div class="movie-info">
+                    <div class="movie-card-title">${movie.title}</div>
+                    <div class="movie-meta">
+                        <span>🔥 ${movie.quality || 'HD'}</span>
+                        <span class="movie-badge">${channel.toUpperCase()}</span>
+                    </div>
+                </div>
+            `;
+            
+            card.addEventListener('click', () => playVideo(
+                card.dataset.videoUrl,
+                card.dataset.title,
+                card.dataset.description,
+                card.dataset.link,
+                {
+                    title: movie.title,
+                    thumbnail: movie.thumbnail,
+                    quality: movie.quality,
+                    channel: channel,
+                    releaseDate: movie.releaseDate,
+                    audio: movie.audio,
+                    imdb: movie.imdb,
+                    duration: movie.duration
+                }
+            ));
+            
+            return card;
+        }
+
+        function createSeriesCards() {
+            const grid = document.getElementById('seriesGrid');
+            if (!grid) return;
+            
+            grid.innerHTML = '';
+            
+            seriesList.forEach(series => {
+                const card = document.createElement('div');
+                card.className = 'movie-card';
+                card.dataset.seriesId = series.id;
+                
+                card.innerHTML = `
+                    <div class="movie-poster">
+                        <img src="${series.thumbnail || 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=200'}" alt="${series.title}">
+                    </div>
+                    <div class="movie-info">
+                        <div class="movie-card-title">${series.title}</div>
+                        <div class="movie-meta">
+                            <span>📺 ${series.episodes} Episodes</span>
+                            <span class="series-badge">SERIES</span>
+                        </div>
+                    </div>
+                `;
+                
+                card.addEventListener('click', () => showSeriesPage(series.id));
+                grid.appendChild(card);
+            });
+        }
+
+        function refreshAllGrids() {
+            createMovieCards();
+            createSeriesCards();
+        }
+
+        function saveToViewed(movieData) {
+            if (movieData.isBanner) return;
+            if (movieData.channel === 'live') return;
+            
+            const existsIndex = viewedMovies.findIndex(m => m.title === movieData.title);
+            
+            if (existsIndex !== -1) {
+                viewedMovies.splice(existsIndex, 1);
+            }
+            
+            viewedMovies.push(movieData);
+            
+            if (viewedMovies.length > MAX_VIEWED) {
+                viewedMovies = viewedMovies.slice(-MAX_VIEWED);
+            }
+            
+            localStorage.setItem('viewedMovies', JSON.stringify(viewedMovies));
+        }
+
+        function playVideo(videoUrl, title, description, link, movieInfo = null, skipSave = false) {
+            const videoElement = document.getElementById('plyrVideo');
+            
+            if (videoUrl.includes('http')) {
+                if (videoUrl.includes('drive.google.com')) {
+                    const fileId = videoUrl.match(/[-\w]{25,}/);
+                    if (fileId) {
+                        videoElement.src = `https://drive.google.com/file/d/${fileId[0]}/preview`;
+                    } else {
+                        videoElement.src = videoUrl;
+                    }
+                } else {
+                    videoElement.src = videoUrl;
+                }
+                videoElement.type = 'video/mp4';
+            } else if (videoUrl.length > 20) {
+                videoElement.src = `https://drive.google.com/file/d/${videoUrl}/preview`;
+            } else {
+                videoElement.src = videoUrl;
+            }
+            
+            if (plyrPlayer) plyrPlayer.destroy();
+            plyrPlayer = new Plyr(videoElement, {
+                controls: ['play-large', 'play', 'progress', 'current-time', 'duration', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'],
+                settings: ['captions', 'quality', 'speed', 'loop'],
+                quality: { default: 1080, options: [4320, 2880, 2160, 1440, 1080, 720, 576, 480, 360, 240] },
+                speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] },
+                autoplay: true
+            });
+            
+            detailsTitle.textContent = title;
+            
+            detailsMeta.innerHTML = '';
+            if (movieInfo) {
+                if (movieInfo.releaseDate) detailsMeta.innerHTML += `<span class="movie-details-meta-item">📅 ${movieInfo.releaseDate}</span>`;
+                if (movieInfo.audio) detailsMeta.innerHTML += `<span class="movie-details-meta-item">🔊 ${movieInfo.audio}</span>`;
+                if (movieInfo.imdb) detailsMeta.innerHTML += `<span class="movie-details-meta-item">⭐ IMDb ${movieInfo.imdb}</span>`;
+                if (movieInfo.duration) detailsMeta.innerHTML += `<span class="movie-details-meta-item">⏱️ ${movieInfo.duration}</span>`;
+                if (movieInfo.quality) detailsMeta.innerHTML += `<span class="movie-details-meta-item">🔥 ${movieInfo.quality}</span>`;
+            }
+            
+            detailsDescription.textContent = description;
+            detailsLink.href = link;
+            
+            if (movieInfo && !skipSave) {
+                saveToViewed({
+                    videoUrl: videoUrl,
+                    title: title,
+                    description: description,
+                    link: link,
+                    thumbnail: movieInfo.thumbnail,
+                    quality: movieInfo.quality || 'HD',
+                    channel: movieInfo.channel || 'movie',
+                    isBanner: movieInfo.isBanner || false
+                });
+            }
+            
+            showLiveFullPage();
+        }
+
+        function goHome() {
+            showHomePage();
+        }
+
+        function goLive() {
+            playVideo(
+                '1s6L5r-1krzZFBnYyatU8-JS9dyyryLlx', 
+                '🔴 LIVE STREAM - CINEVERSE', 
+                'Welcome to CINEVERSE Live! Watch the latest movies, exclusive content, and more. 24/7 live streaming with curated content from Hollywood, K-Drama, and Bollywood.',
+                'https://drive.google.com/file/d/1s6L5r-1krzZFBnYyatU8-JS9dyyryLlx/view',
+                {
+                    title: 'LIVE STREAM - CINEVERSE',
+                    thumbnail: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=200',
+                    quality: '4K',
+                    channel: 'live'
+                },
+                true
+            );
+        }
+
+        siteName.addEventListener('click', goHome);
+        videoSiteName.addEventListener('click', goHome);
+        liveBtn.addEventListener('click', goLive);
+        videoLiveBtn.addEventListener('click', goLive);
+        backFromSeries.addEventListener('click', showSeriesListing);
+
+        // Channel click handlers
+        textHollywood.addEventListener('click', () => {
+            if (videoSection.classList.contains('active')) {
+                videoSection.classList.remove('active');
+                if (plyrPlayer) plyrPlayer.destroy();
+            }
+            if (seriesPage.classList.contains('show')) {
+                seriesPage.classList.remove('show');
+                if (seriesPlyrPlayer) seriesPlyrPlayer.destroy();
+            }
+            document.querySelectorAll('.channel-text').forEach(el => el.classList.remove('active'));
+            textHollywood.classList.add('active');
+            
+            hollywoodRow.style.display = 'block';
+            kdramaRow.style.display = 'none';
+            bollywoodRow.style.display = 'none';
+            tollywoodRow.style.display = 'none';
+            animeRow.style.display = 'none';
+            classicRow.style.display = 'none';
+            horrorRow.style.display = 'none';
+            seriesRow.style.display = 'none';
+            
+            movieSection.style.display = 'block';
+            mainScreenBar.style.display = 'block';
+        });
+
+        textKdrama.addEventListener('click', () => {
+            if (videoSection.classList.contains('active')) {
+                videoSection.classList.remove('active');
+                if (plyrPlayer) plyrPlayer.destroy();
+            }
+            if (seriesPage.classList.contains('show')) {
+                seriesPage.classList.remove('show');
+                if (seriesPlyrPlayer) seriesPlyrPlayer.destroy();
+            }
+            document.querySelectorAll('.channel-text').forEach(el => el.classList.remove('active'));
+            textKdrama.classList.add('active');
+            
+            hollywoodRow.style.display = 'none';
+            kdramaRow.style.display = 'block';
+            bollywoodRow.style.display = 'none';
+            tollywoodRow.style.display = 'none';
+            animeRow.style.display = 'none';
+            classicRow.style.display = 'none';
+            horrorRow.style.display = 'none';
+            seriesRow.style.display = 'none';
+            
+            movieSection.style.display = 'block';
+            mainScreenBar.style.display = 'block';
+        });
+
+        textBollywood.addEventListener('click', () => {
+            if (videoSection.classList.contains('active')) {
+                videoSection.classList.remove('active');
+                if (plyrPlayer) plyrPlayer.destroy();
+            }
+            if (seriesPage.classList.contains('show')) {
+                seriesPage.classList.remove('show');
+                if (seriesPlyrPlayer) seriesPlyrPlayer.destroy();
+            }
+            document.querySelectorAll('.channel-text').forEach(el => el.classList.remove('active'));
+            textBollywood.classList.add('active');
+            
+            hollywoodRow.style.display = 'none';
+            kdramaRow.style.display = 'none';
+            bollywoodRow.style.display = 'block';
+            tollywoodRow.style.display = 'none';
+            animeRow.style.display = 'none';
+            classicRow.style.display = 'none';
+            horrorRow.style.display = 'none';
+            seriesRow.style.display = 'none';
+            
+            movieSection.style.display = 'block';
+            mainScreenBar.style.display = 'block';
+        });
+
+        textTollywood.addEventListener('click', () => {
+            if (videoSection.classList.contains('active')) {
+                videoSection.classList.remove('active');
+                if (plyrPlayer) plyrPlayer.destroy();
+            }
+            if (seriesPage.classList.contains('show')) {
+                seriesPage.classList.remove('show');
+                if (seriesPlyrPlayer) seriesPlyrPlayer.destroy();
+            }
+            document.querySelectorAll('.channel-text').forEach(el => el.classList.remove('active'));
+            textTollywood.classList.add('active');
+            
+            hollywoodRow.style.display = 'none';
+            kdramaRow.style.display = 'none';
+            bollywoodRow.style.display = 'none';
+            tollywoodRow.style.display = 'block';
+            animeRow.style.display = 'none';
+            classicRow.style.display = 'none';
+            horrorRow.style.display = 'none';
+            seriesRow.style.display = 'none';
+            
+            movieSection.style.display = 'block';
+            mainScreenBar.style.display = 'block';
+        });
+
+        textAnime.addEventListener('click', () => {
+            if (videoSection.classList.contains('active')) {
+                videoSection.classList.remove('active');
+                if (plyrPlayer) plyrPlayer.destroy();
+            }
+            if (seriesPage.classList.contains('show')) {
+                seriesPage.classList.remove('show');
+                if (seriesPlyrPlayer) seriesPlyrPlayer.destroy();
+            }
+            document.querySelectorAll('.channel-text').forEach(el => el.classList.remove('active'));
+            textAnime.classList.add('active');
+            
+            hollywoodRow.style.display = 'none';
+            kdramaRow.style.display = 'none';
+            bollywoodRow.style.display = 'none';
+            tollywoodRow.style.display = 'none';
+            animeRow.style.display = 'block';
+            classicRow.style.display = 'none';
+            horrorRow.style.display = 'none';
+            seriesRow.style.display = 'none';
+            
+            movieSection.style.display = 'block';
+            mainScreenBar.style.display = 'block';
+        });
+
+        textClassic.addEventListener('click', () => {
+            if (videoSection.classList.contains('active')) {
+                videoSection.classList.remove('active');
+                if (plyrPlayer) plyrPlayer.destroy();
+            }
+            if (seriesPage.classList.contains('show')) {
+                seriesPage.classList.remove('show');
+                if (seriesPlyrPlayer) seriesPlyrPlayer.destroy();
+            }
+            document.querySelectorAll('.channel-text').forEach(el => el.classList.remove('active'));
+            textClassic.classList.add('active');
+            
+            hollywoodRow.style.display = 'none';
+            kdramaRow.style.display = 'none';
+            bollywoodRow.style.display = 'none';
+            tollywoodRow.style.display = 'none';
+            animeRow.style.display = 'none';
+            classicRow.style.display = 'block';
+            horrorRow.style.display = 'none';
+            seriesRow.style.display = 'none';
+            
+            movieSection.style.display = 'block';
+            mainScreenBar.style.display = 'block';
+        });
+
+        textHorror.addEventListener('click', () => {
+            if (videoSection.classList.contains('active')) {
+                videoSection.classList.remove('active');
+                if (plyrPlayer) plyrPlayer.destroy();
+            }
+            if (seriesPage.classList.contains('show')) {
+                seriesPage.classList.remove('show');
+                if (seriesPlyrPlayer) seriesPlyrPlayer.destroy();
+            }
+            document.querySelectorAll('.channel-text').forEach(el => el.classList.remove('active'));
+            textHorror.classList.add('active');
+            
+            hollywoodRow.style.display = 'none';
+            kdramaRow.style.display = 'none';
+            bollywoodRow.style.display = 'none';
+            tollywoodRow.style.display = 'none';
+            animeRow.style.display = 'none';
+            classicRow.style.display = 'none';
+            horrorRow.style.display = 'block';
+            seriesRow.style.display = 'none';
+            
+            movieSection.style.display = 'block';
+            mainScreenBar.style.display = 'block';
+        });
+
+        textSeries.addEventListener('click', () => {
+            if (videoSection.classList.contains('active')) {
+                videoSection.classList.remove('active');
+                if (plyrPlayer) plyrPlayer.destroy();
+            }
+            if (seriesPage.classList.contains('show')) {
+                seriesPage.classList.remove('show');
+                if (seriesPlyrPlayer) seriesPlyrPlayer.destroy();
+            }
+            document.querySelectorAll('.channel-text').forEach(el => el.classList.remove('active'));
+            textSeries.classList.add('active');
+            
+            hollywoodRow.style.display = 'none';
+            kdramaRow.style.display = 'none';
+            bollywoodRow.style.display = 'none';
+            tollywoodRow.style.display = 'none';
+            animeRow.style.display = 'none';
+            classicRow.style.display = 'none';
+            horrorRow.style.display = 'none';
+            seriesRow.style.display = 'block';
+            
+            movieSection.style.display = 'block';
+            mainScreenBar.style.display = 'block';
+        });
+
+        // Footer links
+        document.querySelectorAll('[id^="footerHome"]').forEach(el => {
+            el.addEventListener('click', goHome);
+        });
+
+        document.querySelectorAll('[id^="footerLive"]').forEach(el => {
+            el.addEventListener('click', goLive);
+        });
+
+        document.querySelectorAll('[id^="footerSeries"]').forEach(el => {
+            el.addEventListener('click', () => {
+                showHomePage();
+                document.querySelectorAll('.channel-text').forEach(el => el.classList.remove('active'));
+                textSeries.classList.add('active');
+                
+                hollywoodRow.style.display = 'none';
+                kdramaRow.style.display = 'none';
+                bollywoodRow.style.display = 'none';
+                tollywoodRow.style.display = 'none';
+                animeRow.style.display = 'none';
+                classicRow.style.display = 'none';
+                horrorRow.style.display = 'none';
+                seriesRow.style.display = 'block';
+            });
+        });
+
+        document.querySelectorAll('[id^="footerMovies"]').forEach(el => {
+            el.addEventListener('click', () => {
+                showHomePage();
+                document.querySelectorAll('.channel-text').forEach(el => el.classList.remove('active'));
+                
+                hollywoodRow.style.display = 'block';
+                kdramaRow.style.display = 'none';
+                bollywoodRow.style.display = 'none';
+                tollywoodRow.style.display = 'none';
+                animeRow.style.display = 'none';
+                classicRow.style.display = 'none';
+                horrorRow.style.display = 'none';
+                seriesRow.style.display = 'block';
+            });
+        });
+
+        document.querySelectorAll('[id^="footerAbout"]').forEach(el => {
+            el.addEventListener('click', () => alert('📄 About CINEVERSE: Your ultimate streaming destination for Hollywood, K-Drama, and Bollywood content.'));
+        });
+
+        document.querySelectorAll('[id^="footerContact"]').forEach(el => {
+            el.addEventListener('click', () => alert('📞 Contact us: support@cineverse.com'));
+        });
+
+        document.querySelectorAll('[id^="footerTerms"]').forEach(el => {
+            el.addEventListener('click', () => alert('📜 Terms of Service: Standard streaming terms apply.'));
+        });
+
+        document.querySelectorAll('[id^="footerPrivacy"]').forEach(el => {
+            el.addEventListener('click', () => alert('🔒 Privacy Policy: We respect your privacy.'));
+        });
+
+        closeVideo.addEventListener('click', showHomePage);
+
+        document.querySelectorAll('.dropdown-item').forEach(item => {
+            item.addEventListener('click', function() {
+                if (videoSection.classList.contains('active')) {
+                    videoSection.classList.remove('active');
+                    if (plyrPlayer) plyrPlayer.destroy();
+                }
+                alert(`Loading ${this.dataset.channel.toUpperCase()} channel`);
+            });
+        });
+
+        document.getElementById('dropdownBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('dropdownContent').classList.toggle('show');
+        });
+
+        document.addEventListener('click', (e) => {
+            const btn = document.getElementById('dropdownBtn');
+            const content = document.getElementById('dropdownContent');
+            if (!btn.contains(e.target) && !content.contains(e.target)) {
+                content.classList.remove('show');
+            }
+        });
+
+        function updateViewerCount() {
+            const viewerText = '44.48k';
+            if (liveViewerCountHeader) liveViewerCountHeader.textContent = viewerText;
+            if (liveViewerCount) liveViewerCount.textContent = viewerText;
+        }
+
+        setInterval(updateViewerCount, 5000);
+
+        // Initialize
+        updateSlider();
+        refreshAllGrids();
+        showHomePage();
+        updateViewerCount();
+    </script>
+</body>
+</html>
